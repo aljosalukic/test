@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>ListVideos.qml</file>
+        <file>ListVideos_copy.qml</file>
+    </qresource>
+</RCC>

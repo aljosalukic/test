@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>Meni.qml</file>
+        <file>VideoItem.qml</file>
+        <file>FormDialog.qml</file>
+    </qresource>
+    <qresource prefix="/images">
+        <file>Pictures/videoIcon.jpg</file>
+    </qresource>
+</RCC>
