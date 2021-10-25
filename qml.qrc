@@ -2,7 +2,7 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>Meni.qml</file>
-        <file>VideoItem.qml</file>
+        <file>VideoItems.qml</file>
         <file>FormDialog.qml</file>
     </qresource>
     <qresource prefix="/images">

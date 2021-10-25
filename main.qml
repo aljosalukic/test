@@ -29,7 +29,7 @@ Window {
         onClicked: {showVideos(name)}
     }
 
-    VideoItem
+    VideoItems
     {
         id:listVideos
         visible: false

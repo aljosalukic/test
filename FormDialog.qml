@@ -26,7 +26,14 @@ Dialog {
         }
         else
         {
-            console.log(comboBox.valueAt(comboBox.currentIndex))
+            console.log("signal to utils to create shape")
+        }
+    }
+
+    Connections{
+        target: utils
+        onSignalShowProgressBar:{
+            progressBar.visible = show
         }
     }
 
@@ -61,6 +68,17 @@ Dialog {
             value: 5
             to: 60
         }
+    }
+
+    Dialog{
+        id:progressBar
+        visible:false
+        standardButtons: Dialog.Cancel
+        ProgressBar {
+            indeterminate: true
+        }
+
+        onButtonClicked: console.log("Emit signal, Force creating video to stop!");
     }
 
     onAccepted: editVideo()

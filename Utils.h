@@ -3,15 +3,17 @@
 
 #include <QObject>
 #include <QVideoFrame>
-#include <QImage>
+#include <QMediaPlayer>
 
-class QMediaPlayer;
+
 class QVideoProbe;
 class QImage;
 
 class Utils : public QObject
 {
     Q_OBJECT
+
+    Q_PROPERTY(bool value NOTIFY signalShowProgressBar)
 public:
     explicit Utils(QObject *parent = nullptr);
     ~Utils();
@@ -22,11 +24,13 @@ public:
     QString createThumbnails(QString path);
 
     Q_INVOKABLE void createVideoWithText(QString path, QString text);
+
 signals:
+    void signalShowProgressBar(bool show);
 
 private slots:
     void handleVideoProbed(QVideoFrame frame);
-
+    void handleStateChanged(QMediaPlayer::State);
 
 private:
     QString m_path;

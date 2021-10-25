@@ -1,9 +1,8 @@
 #include "Utils.h"
 #include <QImage>
-#include <QVideoProbe>
-#include <QMediaPlayer>
 #include <QUrl>
 #include <QVideoFrame>
+#include <QVideoProbe>
 #include <QProcess>
 #include <QFile>
 #include <QDir>
@@ -28,6 +27,8 @@ Utils::Utils(QObject *parent) : QObject(parent),
 
     bool ok = connect(m_videoProbe, &QVideoProbe::videoFrameProbed, this, &Utils::handleVideoProbed);
     Q_ASSERT(ok);
+    ok = connect(m_mediaPlayer, &QMediaPlayer::stateChanged, this, &Utils::handleStateChanged);
+    Q_ASSERT(ok);
 }
 
 Utils::~Utils()
@@ -50,7 +51,6 @@ void Utils::initDirectories()
     QDir directory;
     directory.mkdir(RAW_FOLDER);
     directory.mkdir(EDITED_FOLDER);
-    directory.mkdir(TMP_FOLDER);
 }
 
 QString Utils::createThumbnails(QString path)
@@ -99,6 +99,9 @@ QString Utils::createThumbnails(QString path)
 
 void Utils::createVideoWithText(QString path, QString text)
 {
+    QDir directory;
+    directory.mkdir(TMP_FOLDER);
+
     m_text = text;
     m_path = path;
     m_FrameCounter = 0;
@@ -120,4 +123,36 @@ void Utils::handleVideoProbed(QVideoFrame frame)
     QString name = "tmp" + QString::number(m_FrameCounter);
 
     image.save(TMP_FOLDER + "/" + name + ".jpg");
+}
+
+void Utils::handleStateChanged(QMediaPlayer::State state)
+{
+    //ffmpeg -start_number n -i test_%d.jpg -vcodec mpeg4 test.avi
+    if(state == QMediaPlayer::State::StoppedState)
+    {
+        QProcess process;
+
+        bool ok = connect(&process, &QProcess::errorOccurred, this, [=](QProcess::ProcessError error){qDebug() << "error: "<< error;});
+        Q_ASSERT(ok);
+        ok = connect(&process, &QProcess::started, this, [=](){qDebug() << "Started";});
+        Q_ASSERT(ok);
+
+        //connect to finish process signal and do stuff there -> send signal to progressbar window, remove tmp directory, etc...
+
+        QStringList arguments;
+
+        QProcess ffmpeg;
+        ffmpeg.start("ffmpeg" , QStringList()
+                     << "-start_number" << "1"
+                     << "-i" << "tmp%d.jpg"
+                     << "-vcodec" << "mpeg4"
+                     << QDir::toNativeSeparators("output.avi"));
+
+        emit signalShowProgressBar(false);
+
+    }
+    else if(state == QMediaPlayer::State::PlayingState)
+    {
+        emit signalShowProgressBar(true);
+    }
 }
